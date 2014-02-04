@@ -1,0 +1,9 @@
+[submodule "BarkingOwl"]
+	path = BarkingOwl
+	url = https://github.com/thequbit/BarkingOwl
+[submodule "dler"]
+	path = dler
+	url = https://github.com/thequbit/dler.git
+[submodule "unpdfer"]
+	path = unpdfer
+	url = https://github.com/thequbit/unpdfer.git
