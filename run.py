@@ -54,7 +54,7 @@ def search():
     
     # Make sure we are actually searching for something, and if so then
     # perform the search
-    if not phrase == "" and len(phrase) > 4:
+    if not phrase == "" and len(phrase) > 4 and re.match("^[A-Za-z0-9_-]*$", phrase):
 
         # save the phrase to the database
         savesearch(phrase)
