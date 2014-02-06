@@ -100,8 +100,11 @@ def search():
 @app.route('/searches.json', methods=['GET'])
 def searches():
 
+    today = str(date.today().strftime("%Y-%m-%d"))
+    yesterday = str((date.today() - timedelta(1)).strftime("%Y-%m-%d"))
+    query = { '$or': [ {'date':today},{'date':yesterday} ] }
     searches = []
-    for search in collection.find():
+    for search in collection.find(query):
         searches.append({'phrase':search['phrase'],'count':search['count']})
 
     return json.dumps(searches)
@@ -109,15 +112,16 @@ def searches():
 def savesearch(phrase):
 
     today = str(date.today().strftime("%Y-%m-%d"))
-    yesterday = str((date.today() - timedelta(1)).strftime("%Y-%m-%d"))
-    result = collection.find_one({'phrase':phrase,
-                                  '$or': [
-                                      {'date':today}, 
-                                      {'date':yesterday},
-                                  ],
+    #yesterday = str((date.today() - timedelta(1)).strftime("%Y-%m-%d"))
+    result = collection.find_one({'phrase': phrase,
+                                  'date': today,
+                                  #'$or': [
+                                  #    {'date':today}, 
+                                  #    {'date':yesterday},
+                                  #],
                                  })
     if result == None:
-        print "Adding '{0}' to database.".format(phrase)
+        #print "Adding '{0}' to database.".format(phrase)
         search = {
             'phrase': phrase,
             'count': 1,
@@ -125,7 +129,7 @@ def savesearch(phrase):
         }
         collection.insert(search)
     else:
-        print "Increasing count by one for '{0}'".format(phrase)
+        #print "Increasing count by one for '{0}'".format(phrase)
         search = {
             'phrase': phrase,
             'count': result['count']+1,
