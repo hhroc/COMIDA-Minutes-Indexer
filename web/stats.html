@@ -1,0 +1,50 @@
+{% extends "master.html" %}
+
+{% block body %}
+
+<div>
+
+<h3>Search Statistics</h3>
+
+<p class="tab">
+Each day that users come to this site their search terms are recorded (note: no other personal information is stored, simply just the phrase that is being searched for).  You can see these searche represented in the word-cloud bellow.  The larger the word, the more times it has been searched for.
+</p>
+
+
+</div>
+
+<div>
+
+<div style="border: 1px solid; width: 640px; margin: auto;">
+<canvas id="wordcanvas" />
+</div>
+
+</div>
+
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="wordcloud2.js"></script>
+
+<script>
+
+    function load()
+    {
+ 
+        var canvas = document.getElementById('wordcanvas');
+        canvas.width = 640;
+        canvas.height = 480;
+ 
+        $.getJSON('searches.json', function(data) {
+            var words = [];
+            for(var i=0; i<data.length; i++) {
+                var word = [data[i].phrase,data[i].count];
+                words.push(word);
+            }
+            WordCloud(document.getElementById('wordcanvas'), { list: words } );
+        });
+    }
+
+    load();
+
+</script>
+
+{% endblock %}
