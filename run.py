@@ -5,6 +5,7 @@ from flask import request
 import json
 import re
 from time import strftime
+from datetime import date, timedelta
 
 from pymongo import MongoClient
 
@@ -107,8 +108,14 @@ def searches():
 
 def savesearch(phrase):
 
+    today = str(date.today().strftime("%Y-%m-%d"))
+    yesterday = str((date.today() - timedelta(1)).strftime("%Y-%m-%d"))
     result = collection.find_one({'phrase':phrase,
-                                  'date':str(strftime("%Y-%m-%d"))})
+                                  '$or': [
+                                      {'date':today}, 
+                                      {'date':yesterday},
+                                  ],
+                                 })
     if result == None:
         print "Adding '{0}' to database.".format(phrase)
         search = {
