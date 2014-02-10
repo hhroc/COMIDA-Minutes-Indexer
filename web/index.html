@@ -47,25 +47,23 @@
 
             html += "Result Count: " + data.count;
             for(var i=0; i<data.results.length; i++) {
-              console.log("linktext: " + data.results[i].linktext + ", docname: " + data.results[i].linktext);
-              html += "<div class=\"searchresult\">";
-              //html += "[" + data.results[i].scrapedatetime + "]";
-              html += "<div class=\"resultheader\"><a href=\"" + data.results[i].docurl + "\">";
  
               var parts = data.results[i].docurl.split('/')
               var filename = parts[parts.length-1].replace(/%20/g,' ').replace('(1)','').replace('(2)','').replace('(3)','');
               var linktext =  filename;
-              html += linktext+ "</a></div>";
-              //}
-              //else {
-              //  html += data.results[i].linktext + "</a></br>";
-              //}
-              //html += "<b>" + data.results[i].docname + "</b></br>";
-              //html += " - " + data.results[i].scrapedatetime.split(' ')[0] + "</br></div>";
+              
               var phrase = data.phrase.toLowerCase();
-              var previewtext = data.results[i].previewtext.toLowerCase();
+              var previewtext = data.results[i].previewtext.toLowerCase();             
               previewtext = previewtext.replaceAll(phrase,"<b>" + phrase + "</b>");
+ 
+              html += "<div class=\"searchresult\">";
+              
+              html += "<div class=\"resultheader\"><a href=\"" + data.results[i].docurl + "\">";
+              html += linktext + "</a>";
+              html += "<div>[ " + data.results[i].created.split('T')[0] + " ]</div>";
+              html += "</div>";
               html += previewtext + "</br>";
+              
               html += "</div>";
             }
 
