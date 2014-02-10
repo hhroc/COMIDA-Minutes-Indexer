@@ -9,6 +9,8 @@ from datetime import date, timedelta
 
 from pymongo import MongoClient
 
+import urllib2
+
 import elasticsearch
 
 app = Flask(__name__, static_folder='web/static', static_url_path='')
@@ -54,7 +56,7 @@ def search():
     
     # Make sure we are actually searching for something, and if so then
     # perform the search
-    if not phrase == "" and len(phrase) > 3 and re.match(r'^[\w\d\s_]*$', phrase):
+    if not phrase == "" and len(phrase) > 3 and re.match(r'^[\w\d\s_]*$', phrase) and badword(phrase) == False:
 
         # save the phrase to the database
         savesearch(phrase)
@@ -126,6 +128,16 @@ def searches():
         #print search
 
     return json.dumps(searches)
+
+def badword(phrase):
+
+    url = "http://www.wdyl.com/profanity?q="
+
+    response = urllib2.urlopen("{0}{1}".format(url,phrase))
+
+    data = json.load(response)
+
+    return data['response']
 
 def savesearch(phrase):
 
@@ -200,5 +212,5 @@ if __name__ == "__main__":
     
     host = '0.0.0.0'
     port = 8083
-    
+
     fa = app.run(host=host, port=port)
