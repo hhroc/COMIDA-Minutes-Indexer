@@ -54,12 +54,12 @@ def search():
     
     # Make sure we are actually searching for something, and if so then
     # perform the search
-    if not phrase == "" and len(phrase) > 4 and re.match(r'^[\w\d\s_]*$', phrase):
+    if not phrase == "" and len(phrase) > 3 and re.match(r'^[\w\d\s_]*$', phrase):
 
         # save the phrase to the database
         savesearch(phrase)
 
-        print phrase
+        #print phrase
 
         if True:
         #try:
