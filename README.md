@@ -7,8 +7,10 @@ What is this?
 =============
 
 This tool was created to index meeting minutes (notes) for the County of Monroe Industrial Development Agency (COMIDA).
-The tool has two parts: 1) a web scraper that pulls down the pdf documents, converts them, and then indexes them, 
-and 2) a small web application that allows for simple searching of these indexed documents.
+The tool has two parts:
+
+ - A web scraper that pulls down the pdf documents, converts them, and then indexes them.
+ - A small web application that allows for simple searching of these indexed documents.
 
 You can see a live demo of this code [here](http://comida.mycodespace.net/)
 
