@@ -25,6 +25,10 @@
       {
 	return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
       }
+
+      function comp(a, b) {
+          return new Date(b.created).getTime() - new Date(a.created).getTime();
+      }
  
       $("#phrase").bind("keypress", {}, keypressInBox);
       
@@ -36,6 +40,9 @@
           var url = "search.json?phrase=" + $("#phrase").val();
           $.getJSON(url, function (data) {
             
+            // sort results by date
+            data.results.sort(comp);
+
             var html = "";
 
             html += "Result Count: " + data.count;

@@ -54,40 +54,57 @@ def search():
     
     # Make sure we are actually searching for something, and if so then
     # perform the search
-    if not phrase == "" and len(phrase) > 4 and re.match("^[A-Za-z0-9_-]*$", phrase):
+    if not phrase == "" and len(phrase) > 4 and re.match(r'^[\w\d\s_]*$', phrase):
 
         # save the phrase to the database
         savesearch(phrase)
+
+        print phrase
 
         if True:
         #try:
 
             es = elasticsearch.Elasticsearch()
 
+            if ' ' in phrase:
+                query = {"match": {
+                            "pdftext": {
+                                "query": phrase,
+                                "operator": "and",
+                }}}
+            else:
+                query = {"match": {
+                            "pdftext": phrase,
+                }}
+
             # perform the search
             results = es.search(index="comida",
                                 body={
                                     "size": 300,
                                     "from": 0,
-                                    "query": {
-                                        "match": {
-                                            "pdftext": phrase
-                                }}})
+                                    "query": query
+                                })
      
             # create our return object to send back
             response['success'] = True
             response['count'] = len(results['hits']['hits'])
             response['results'] = []
             for hit in results['hits']['hits']:
-                response['results'].append({
-                    'score': hit['_score'],
-                    'docid': hit['_id'],
-                    'docurl': hit['_source']['docurl'],
-                    'scrapedatetime': hit['_source']['scrapedatetime'],
-                    'linktext': hit['_source']['linktext'].replace('\n',' ').replace('\r',''),
-                    'previewtext': buildpreviewtext(phrase,hit['_source']['pdftext']),
-                    #'searchid': str(searchid),
-                })
+
+                previewtext = buildpreviewtext(phrase,hit['_source']['pdftext'])
+
+                if previewtext != '':
+
+                    response['results'].append({
+                        'score': hit['_score'],
+                        'docid': hit['_id'],
+                        'docurl': hit['_source']['docurl'],
+                        'scrapedatetime': hit['_source']['scrapedatetime'],
+                        'linktext': hit['_source']['linktext'].replace('\n',' ').replace('\r',''),
+                        'previewtext': previewtext,
+                        'created': hit['_source']['created'],
+                        #'searchid': str(searchid),
+                    })
 
         #except:
         #    pass
@@ -106,6 +123,7 @@ def searches():
     searches = []
     for search in collection.find(query):
         searches.append({'phrase':search['phrase'],'count':search['count']})
+        #print search
 
     return json.dumps(searches)
 

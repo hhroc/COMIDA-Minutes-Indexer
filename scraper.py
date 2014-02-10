@@ -11,6 +11,9 @@ from BarkingOwl.scraper.scraper import Scraper
 from dler.dler import DLer
 from unpdfer.unpdfer import UnPDFer
 
+import hashlib
+import re
+
 class Wrapper():
 
     def __init__(self):
@@ -45,7 +48,7 @@ class Wrapper():
         docurl = payload['message']['docurl']
         linktext = payload['message']['linktext']
 
-        success,pdftext,pdfhash = self.getText(docurl)
+        success,pdftext,pdfhash,created = self.getText(docurl)
 
         if success:
             
@@ -59,6 +62,7 @@ class Wrapper():
                 'linktext': linktext,
                 'pdftext': pdftext,
                 'pdfhash': pdfhash,
+                'created': created,
             }
 
             # make sure the doc doesn't already exist within the index
@@ -98,7 +102,25 @@ class Wrapper():
         unpdfer = UnPDFer(filename)
         created,pdftext,pdfhash,success = unpdfer.unpdf(filename,SCRUB=True,verbose=False)
 
-        return success,pdftext,pdfhash
+        print created
+
+        if success:
+
+            # make all white space spaces 
+            pdftext = pdftext.replace('\n',' ')
+            pdftext = pdftext.replace('\r',' ')
+            pdftext = pdftext.replace('\t',' ')
+
+            # this is done 4 times for the situation of ' \n\t \n\t' 
+            for i in range(0,3):
+                pdftext = re.sub(' +',' ',pdftext)
+                pdftext = re.sub('\n+','\n',pdftext)
+                pdftext = re.sub('\t+','\t',pdftext)
+
+            # recalculate the hash of the text
+            hashlib.md5(pdftext).hexdigest()
+
+        return success,pdftext,pdfhash,created
 
     def checkexists(self,pdfhash):
 
