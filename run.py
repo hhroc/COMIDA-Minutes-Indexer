@@ -39,6 +39,8 @@ def search():
     # decode the phrase being searched for
     try:
         phrase = request.args['phrase']
+        print phrase
+
     except:
         phrase = ""
 
@@ -56,12 +58,10 @@ def search():
     
     # Make sure we are actually searching for something, and if so then
     # perform the search
-    if not phrase == "" and len(phrase) > 3 and re.match(r'^[\w\d\s_]*$', phrase) and badword(phrase) == False:
+    if phrase != "" and len(phrase) > 3 and bool(re.search(r'^[\w\d\s_]*$', phrase, re.IGNORECASE)) and not badword(phrase):
 
         # save the phrase to the database
         savesearch(phrase)
-
-        #print phrase
 
         if True:
         #try:
@@ -95,7 +95,8 @@ def search():
 
                 previewtext = buildpreviewtext(phrase,hit['_source']['pdftext'])
 
-                if previewtext != '':
+                #if previewtext != '':
+                if True:
 
                     response['results'].append({
                         'score': hit['_score'],
@@ -131,13 +132,20 @@ def searches():
 
 def badword(phrase):
 
+    words = phrase.split(' ')
+
     url = "http://www.wdyl.com/profanity?q="
 
-    response = urllib2.urlopen("{0}{1}".format(url,phrase))
+    retval = False
+    for word in words:
+        response = urllib2.urlopen("{0}{1}".format(url,word))
+        data = json.load(response)
 
-    data = json.load(response)
+        if data['response'] == 'true':
+            retval = True
+            break
 
-    return data['response']
+    return retval
 
 def savesearch(phrase):
 
