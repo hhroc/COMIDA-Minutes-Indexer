@@ -57,5 +57,5 @@ You will finally need to install the following applications to run the scraper a
     
     Fedora:
     > sudo yum install elasticsearch
-    > sudo yum install mongodb
+    > sudo yum install mongo-10gen mongo-10gen-server
 
